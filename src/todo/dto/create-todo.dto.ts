@@ -9,9 +9,11 @@ export class CreateTodoDto {
 
   @IsString()
   @IsNotEmpty({ message: `priority todo must be filled` })
+  @ApiProperty()
   public priority: string;
 
   @IsNumber()
-  @IsNotEmpty({ message: `activity group must be filled`})
+  @IsNotEmpty({ message: `activity group must be filled` })
+  @ApiProperty()
   public activityGroupId: number;
 }

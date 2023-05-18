@@ -16,6 +16,12 @@ export class TodoService {
     return await this.repository.find();
   }
 
+  async findByActivityGroupId(activityGroupId: number) {
+    return await this.repository.findBy({
+      activity_group_id: activityGroupId,
+    });
+  }
+
   async findOne(todo_id: number): Promise<Todo | null> {
     return await this.repository.findOneBy({ todo_id });
   }
@@ -33,7 +39,7 @@ export class TodoService {
     entity.priority = createTodoDto.priority;
     entity.is_active = true;
     entity.activity_group_id = createTodoDto.activityGroupId;
-    return this.repository.create(entity);
+    return await this.repository.save(entity);
   }
 
   async remove(id: number): Promise<void> {

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -14,16 +15,45 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoService } from './todo.service';
 import { Todo } from './todo.entity';
 import { TodoExistGuard } from './todo-exist.guard';
+import { ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
 
 @Controller('todo-items')
 export class TodoController {
   constructor(private todoService: TodoService) {}
 
   @Get('/')
-  async getTodos() {
-    const todos: Todo[] = await this.todoService.findAll();
+  @ApiQuery({
+    type: Number,
+    name: 'id',
+  })
+  async getTodos(
+    @Query('activity_group_id', ParseIntPipe) activityGroupId: number,
+  ) {
+    let todos: Todo[] = [];
 
-    
+    if (activityGroupId) {
+      todos = await this.todoService.findByActivityGroupId(activityGroupId);
+    } else {
+      todos = await this.todoService.findAll();
+    }
+
+    const result = todos.map((todo: Todo) => {
+      return {
+        id: todo.todo_id,
+        activity_group_id: todo.activity_group_id,
+        title: todo.title,
+        is_active: todo.is_active,
+        priority: todo.priority,
+        createdAt: todo.created_at,
+        updatedAt: todo.updated_at,
+      };
+    });
+
+    return {
+      message: 'Success',
+      status: 'Success',
+      data: result,
+    };
   }
 
   @Get('/:id')
@@ -47,6 +77,9 @@ export class TodoController {
   }
 
   @Post('/')
+  @ApiBody({
+    type: CreateTodoDto,
+  })
   async createTodo(@Body() createTodoDto: CreateTodoDto) {
     const todo: Todo = await this.todoService.create(createTodoDto);
 
@@ -99,6 +132,6 @@ export class TodoController {
       status: 'Success',
       message: 'Success',
       data: [],
-    }
+    };
   }
 }

@@ -11,15 +11,13 @@ import { Todo } from './todo.entity';
 export class TodoExistGuard implements CanActivate {
   constructor(private todoService: TodoService) {}
 
-  async canActivate(
-    context: ExecutionContext,
-  ): Promise<boolean>  {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const todo: Todo = await this.todoService.findOne(request.id);
+    const todo: Todo = await this.todoService.findOne(request.params.id);
     if (todo == null) {
       throw new NotFoundException({
-          status: 'Not Found',
-          message: `Todo with ID ${request.id} Not Found`,
+        status: 'Not Found',
+        message: `Todo with ID ${request.params.id} Not Found`,
       });
     }
     return true;

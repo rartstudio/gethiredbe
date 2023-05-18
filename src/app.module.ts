@@ -33,7 +33,5 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     ActivityModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
